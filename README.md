@@ -8,6 +8,31 @@ This project is designed as a **portable wireless monitoring node** that can run
 
 ---
 
+## First Time Installation (Run Once)
+
+## First install Termux and Termux API from FDroid
+## Then give Termux API Location access
+
+## If Play Protect prevents Termux API from installing, disable it from Play Store.
+
+Run this single command in Termux:
+
+```bash
+pkg install git -y
+git clone https://github.com/My-Mation/network-scanner
+cd network-scanner
+chmod +x install.sh
+./install.sh
+./start.sh
+
+```
+Stop it by clicking Ctrl C
+
+```bash
+cd ~/network-scanner
+./start.sh
+
+```
 ## Features
 
 - Real-time RF activity dashboard
@@ -49,43 +74,6 @@ Android device with:
 - WiFi hardware capable of scanning
 
 Some Android devices restrict wireless scanning capabilities.
-
----
-
-## Installation
-
-Clone the repository:
-
-```bash
-pkg install git
-git clone https://github.com/YOUR_USERNAME/wireless-observatory
-cd wireless-observatory
-```
-
-Run the installer:
-
-```bash
-chmod +x install.sh
-./install.sh
-```
-
-Start the node:
-
-```bash
-./start.sh
-```
-
----
-
-## Access the Dashboard
-
-Open your browser and navigate to:
-
-```
-http://localhost:5000
-```
-
-The wireless monitoring dashboard will load.
 
 ---
 
