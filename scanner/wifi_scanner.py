@@ -24,10 +24,10 @@ def band_from_freq(freq):
 
 def scan_wifi():
 
+    networks = []
+
     result = subprocess.check_output(["termux-wifi-scaninfo"])
     data = json.loads(result.decode())
-
-    networks = []
 
     for net in data:
 

@@ -1,362 +1,474 @@
-/* ================================
-GLOBAL
-================================ */
+/* v5 — fixed radar circle, presence/motion multi-col, correct IDs */
 
-body{
-background:#070707;
-color:#00ff9c;
-margin:0;
-padding:16px;
-font-family:"JetBrains Mono","Share Tech Mono",monospace;
-font-size:20px;
-letter-spacing:.4px;
-overflow-x:hidden;
-}
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=JetBrains+Mono:wght@300;400;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; }
 
 /* ================================
-HEADER
+   VARIABLES
 ================================ */
-
-.header{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:18px;
-}
-
-h1{
-font-family:"Share Tech Mono";
-letter-spacing:2px;
-color:#00ffaa;
-}
-
-#node-meta span{
-margin-left:18px;
-color:#7affc8;
+:root {
+  --bg:          #060809;
+  --bg-panel:    #080b0e;
+  --bg-inset:    #050708;
+  --accent:      #00ff9c;
+  --accent-mid:  #00ffbf;
+  --accent-dim:  rgba(0,255,150,.14);
+  --accent-soft: #7affc8;
+  --accent-mute: rgba(0,255,150,.22);
+  --warn:        #ffaa00;
+  --danger:      #ff4455;
+  --text:        #b8f0d8;
+  --text-dim:    #3d6b55;
+  --border:      1px solid var(--accent-mute);
+  --radius:      4px;
+  --font-mono:   "JetBrains Mono", "Share Tech Mono", monospace;
+  --font-head:   "Share Tech Mono", monospace;
 }
 
 /* ================================
-GRID LAYOUT
+   SCROLLBARS — dark 3px
 ================================ */
-.dashboard-grid{
-display:grid;
-grid-template-columns: 2fr 1fr 2fr 1fr;
-grid-auto-rows:minmax(240px,auto);
-gap:24px;          /* increased spacing */
-align-items:stretch;
-padding:6px;       /* small outer breathing space */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,255,150,.18) transparent;
 }
+::-webkit-scrollbar        { width: 3px; height: 3px; }
+::-webkit-scrollbar-track  { background: transparent; }
+::-webkit-scrollbar-thumb  { background: rgba(0,255,150,.18); border-radius: 2px; }
+::-webkit-scrollbar-corner { background: transparent; }
 
-.metrics-panel{
-grid-column: span 1;
+/* ================================
+   BASE
+================================ */
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--accent);
+  margin: 0;
+  padding: 16px 20px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: .3px;
+  overflow-x: hidden;
+  line-height: 1.5;
 }
 
 /* ================================
-PANELS
+   TOP STATUS BAR (system + telemetry)
 ================================ */
-
-.panel{
-background:#060606;
-border:1px solid rgba(0,255,150,.25);
-padding:18px;     /* increased */
-border-radius:6px;
-display:flex;
-flex-direction:column;
-width:100%;
-height:100%;
-min-height:200px;
-}
-
-.panel h3{
-font-size:19px;
-letter-spacing:2px;
-color:#00ffbf;
-border-bottom:1px solid rgba(0,255,150,.2);
-padding-bottom:6px;
-margin-bottom:8px;
-}
-
-.wifi-panel{
-grid-column: span 2;
-height:100%;
-display:flex;
-flex-direction:column;
-}
-
-.table-scroll{
-flex:1;
+.top-status {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 14px;
+  margin-bottom: 14px;
 }
 
 /* ================================
-IMPORTANT PANELS
+   HEADER
 ================================ */
-
-.radar-panel{
-grid-column: span 2;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:320px;
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--accent-mute);
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.wifi-panel{
-grid-column:span 2;
-display:flex;
-flex-direction:column;
+h1 {
+  font-family: var(--font-head);
+  letter-spacing: 5px;
+  color: var(--accent-mid);
+  font-size: 17px;
+  margin: 0;
+  text-shadow: 0 0 22px rgba(0,255,180,.45);
 }
 
-.sensor-panel{
-grid-column:1 / -1;
-min-height:260px;
+#node-meta {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: .6px;
+  white-space: nowrap;
 }
-
-.alert-panel{
-grid-column:span 2;
+#node-meta span {
+  margin-left: 18px;
+  color: var(--accent-soft);
 }
 
 /* ================================
-RADAR
+   GRID
 ================================ */
-
-.radar-container{
-display:flex;
-justify-content:center;
-align-items:cener;
-}
-
-#radar{
-width:100%;
-max-width:420px;
-height:auto;
-aspect-ratio:1 / 1;
-display:block;
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(300px,1.5fr) minmax(180px,1fr) minmax(380px,2.5fr) minmax(200px,1fr);
+  gap: 16px;
+  align-items: start;
 }
 
 /* ================================
-CANVAS
+   PANEL BASE
 ================================ */
-
-canvas{
-width:100%;
-height:200px;
-background:#030303;
-min-height:200px;
-border:1px solid rgba(0,255,150,.15);
-border-radius:4px;
+.panel {
+  background: var(--bg-panel);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* WIFI PANEL FIX */
-
-.wifi-panel{
-display:flex;
-flex-direction:column;
-height:100%;
-}
-
-/* container grows with the panel */
-
-.wifi-panel .table-scroll{
-flex:1;
-display:block;
-min-height:220px;
-
-/* allow more rows before scroll */
-
-max-height:420px;
-
-overflow-y:auto;
-overflow-x:hidden;
-}
-
-/* table fills container */
-
-.wifi-panel table{
-width:100%;
-}
-/* ================================
-TABLE CONTAINERS
-================================ */
-
-.table-scroll{
-max-height:260px;
-overflow:auto;
-border:1px solid rgba(0,255,150,.15);
-border-radius:4px;
-padding:6px;
-background:#040404;
-}
-
-/* Hide scrollbars but allow scroll */
-
-.table-scroll::-webkit-scrollbar{
-display:none;
-}
-
-.table-scroll{
-scrollbar-width:none;
--ms-overflow-style:none;
+.panel h3 {
+  font-family: var(--font-head);
+  font-size: 10px;
+  letter-spacing: 3.5px;
+  color: var(--accent-mid);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--accent-dim);
+  padding-bottom: 6px;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 /* ================================
-TABLE STYLING
+   PANEL COLUMN SPANS
 ================================ */
+.radar-panel    { grid-column: span 1; }
+.metrics-panel  { grid-column: span 1; }
+.wifi-panel     { grid-column: span 2; }
+.spectrum-panel { grid-column: span 1; }
+.sensor-panel   { grid-column: 1 / -1; }
+.alert-panel    { grid-column: span 2; }
 
-table{
-width:100%;
-border-collapse:collapse;
-font-size:19px;
-min-width:650px;
+/* panels with no explicit class — assign spans by order */
+/* device presence, motion, density, channel graph = 1 col each */
+
+/* ================================
+   RADAR
+   Canvas has intrinsic 420×420 — we
+   constrain it via the container, not
+   by overriding width/height directly
+   (which causes the ellipse).
+   We clip the container to a circle.
+================================ */
+.radar-panel {
+  align-items: center;
 }
 
-thead{
-background:#0b0b0b;
-border-bottom:2px solid rgba(0,255,150,.3);
+.radar-container {
+  /* fixed square so the circle is never distorted */
+  width: 320px;
+  height: 320px;
+  max-width: 100%;
+  /* enforce square even if flex tries to stretch */
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+
+  border-radius: 50%;
+  overflow: hidden;
+
+  /* glow ring */
+  box-shadow:
+    0 0 0 1px rgba(0,255,150,.35),
+    0 0 28px rgba(0,255,140,.25),
+    0 0 60px rgba(0,255,140,.08);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
 }
 
-th{
-color:#00ffbf;
-font-weight:600;
-padding:8px;
-text-align:left;
-font-size:13px;
+/* canvas fills the container exactly — DO NOT set height separately */
+#radar {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
 }
 
-td{
-padding:7px;
-border-bottom:1px solid rgba(0,255,150,.08);
-}
-
-tr:nth-child(even){
-background:#050505;
-}
-
-tr:hover{
-background:#0d0d0d;
+.radar-stats {
+  font-size: 11px;
+  color: var(--text-dim);
+  text-align: center;
+  width: 100%;
 }
 
 /* ================================
-DEVICE SENSOR PANEL
+   PRE (generic)
 ================================ */
-/* DEVICE SENSORS FULL EXPAND */
-
-#sensors{
-white-space:pre-wrap;
-line-height:1.5;
-padding:12px;
-background:#040404;
-border:1px solid rgba(0,255,150,.15);
-
-/* no scrolling */
-
-overflow:visible;
-max-height:none;
-height:auto;
-}
-
-/* hide scrollbar */
-
-#sensors::-webkit-scrollbar{
-display:none;
-}
-
-#sensors{
-scrollbar-width:none;
--ms-overflow-style:none;
+pre {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  margin: 0;
+  color: var(--text);
+  background: var(--bg-inset);
+  border: 1px solid var(--accent-dim);
+  border-radius: 3px;
+  padding: 10px 12px;
 }
 
 /* ================================
-TEXT PANELS
+   CANVAS (charts only — NOT radar)
 ================================ */
-
-pre{
-font-size:19px;
-line-height:1.45;
-white-space:pre-wrap;
-margin:0;
+canvas:not(#radar) {
+  width: 100% !important;
+  height: 140px !important;
+  background: var(--bg-inset);
+  border: 1px solid var(--accent-dim);
+  border-radius: 3px;
+  display: block;
 }
 
 /* ================================
-STATUS COLORS
+   TABLE SCROLL WRAPPER
 ================================ */
-
-.status-ok{
-color:#00ff9c;
+.table-scroll {
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg-inset);
+  border: 1px solid var(--accent-dim);
+  border-radius: 3px;
+  max-height: 360px;
 }
 
-.sensor-panel{
-grid-column:1 / -1;
-height:auto;
-}
-
-.status-warning{
-color:#ffaa00;
-}
-
-.status-danger{
-color:#ff4444;
+.wifi-panel .table-scroll {
+  max-height: 400px;
 }
 
 /* ================================
-ALERTS
+   TABLES
 ================================ */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  table-layout: fixed;
+}
 
-#alerts{
-color:#ff5555;
-font-weight:600;
+.wifi-panel table th:nth-child(1),
+.wifi-panel table td:nth-child(1) { width: 18%; }
+.wifi-panel table th:nth-child(2),
+.wifi-panel table td:nth-child(2) { width: 26%; }
+.wifi-panel table th:nth-child(3),
+.wifi-panel table td:nth-child(3) { width: 10%; }
+.wifi-panel table th:nth-child(4),
+.wifi-panel table td:nth-child(4) { width: 9%;  }
+.wifi-panel table th:nth-child(5),
+.wifi-panel table td:nth-child(5) { width: 9%;  }
+.wifi-panel table th:nth-child(6),
+.wifi-panel table td:nth-child(6) { width: 14%; }
+.wifi-panel table th:nth-child(7),
+.wifi-panel table td:nth-child(7) { width: 14%; }
+
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #070a0d;
+}
+thead tr { border-bottom: 1px solid rgba(0,255,150,.25); }
+
+th {
+  font-family: var(--font-head);
+  color: var(--accent-mid);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 7px 12px;
+  text-align: left;
+  font-weight: 600;
+}
+
+td {
+  padding: 6px 12px;
+  border-bottom: 1px solid rgba(0,255,150,.06);
+  color: var(--text);
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+tr:nth-child(even) td { background: rgba(0,255,100,.025); }
+tr:hover           td { background: rgba(0,255,100,.055); }
+
+/* ================================
+   DEVICE PRESENCE  — #presence
+   Many MAC addresses → 4 columns
+================================ */
+#presence {
+  columns: 4;
+  column-gap: 24px;
+  column-rule: 1px solid var(--accent-dim);
+  /* override the generic pre styles where needed */
+  max-height: 280px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--accent-soft);
 }
 
 /* ================================
-FOOTER
+   MOTION ANALYSIS  — #motion
+   Many rows → 3 columns
 ================================ */
-
-.footer{
-margin-top:20px;
-display:flex;
-justify-content:space-between;
-font-size:13px;
-color:#7affc8;
-border-top:1px solid rgba(0,255,150,.2);
-padding-top:10px;
+#motion {
+  columns: 3;
+  column-gap: 24px;
+  column-rule: 1px solid var(--accent-dim);
+  max-height: 280px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--accent-soft);
 }
 
 /* ================================
-MOBILE LAYOUT
+   DEVICE SENSORS  — #sensors (full width)
 ================================ */
-
-@media(max-width:900px){
-
-body{
-padding:8px;
-font-size:13px;
+#sensors {
+  columns: 4;
+  column-gap: 24px;
+  column-rule: 1px solid var(--accent-dim);
+  white-space: pre-wrap;
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--accent-soft);
+  height: auto;
+  max-height: none;
+  overflow: visible;
 }
 
-.dashboard-grid{
-grid-template-columns:1fr;
-gap:12px;
+/* ================================
+   OTHER PRE PANELS
+================================ */
+#rf-metrics  { font-size: 13px; }
+#channels    { font-size: 12px; }
+#cells       { font-size: 12px; }
+#alerts      { color: var(--danger); font-weight: 600; font-size: 12px; }
+#lan         { font-size: 12px; }
+#rf-activity { font-size: 12px; max-height: 260px; overflow-y: auto; }
+#events      { font-size: 11px; max-height: 260px; overflow-y: auto; }
+#security    { font-size: 12px; }
+#environment { font-size: 12px; }
+#vendors     { font-size: 12px; }
+#scan-times  { font-size: 12px; }
+#signal-histogram { font-size: 12px; }
+
+/* ================================
+   STATUS COLORS
+================================ */
+.status-ok      { color: var(--accent); }
+.status-warning { color: var(--warn); }
+.status-danger  { color: var(--danger); }
+
+/* ================================
+   FOOTER
+================================ */
+.footer {
+  margin-top: 16px;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--text-dim);
+  border-top: 1px solid var(--accent-mute);
+  padding-top: 10px;
 }
 
-.radar-panel,
-.wifi-panel,
-.sensor-panel,
-.alert-panel{
-grid-column:span 1;
+/* ================================
+   TABLET  901–1200px
+================================ */
+@media (max-width: 1200px) and (min-width: 901px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .radar-panel,
+  .metrics-panel  { grid-column: span 1; }
+  .wifi-panel     { grid-column: span 2; }
+  .sensor-panel   { grid-column: 1 / -1; }
+  .alert-panel    { grid-column: span 2; }
+
+  .radar-container { width: 260px; height: 260px; }
+
+  #sensors  { columns: 3; }
+  #presence { columns: 3; }
+  #motion   { columns: 2; }
 }
 
-#radar{
-width:100%;
-height:auto;
-}
+/* ================================
+   MOBILE  ≤ 900px
+================================ */
+@media (max-width: 900px) {
+  body { padding: 10px 12px; font-size: 12px; }
 
-canvas{
-height:180px;
-}
+  .top-status {
+    grid-template-columns: 1fr;
+  }
 
-table{
-font-size:12px;
-}
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 
-#sensors{
-font-size:12px;
-}
+  /* all panels full width */
+  .radar-panel, .metrics-panel, .wifi-panel,
+  .sensor-panel, .alert-panel, .spectrum-panel,
+  .cell-panel, .lan-panel, .activity-panel,
+  .histogram-panel, .vendor-panel, .performance-panel,
+  .event-panel, .security-panel, .environment-panel {
+    grid-column: span 1;
+  }
 
+  /* radar stays square and smaller */
+  .radar-container {
+    width: 240px;
+    height: 240px;
+  }
+
+  canvas:not(#radar) { height: 120px !important; }
+
+  /* default: no x-scroll */
+  .table-scroll {
+    overflow-x: hidden;
+    max-height: none;
+  }
+
+  /* WIFI ONLY: invisible horizontal swipe scroll */
+  .wifi-panel .table-scroll {
+    overflow-x: auto !important;
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+  .wifi-panel .table-scroll::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  .wifi-panel table {
+    table-layout: auto !important;
+    min-width: 620px !important;
+    width: max-content !important;
+  }
+
+  /* collapse columns on small screens */
+  #sensors  { columns: 1; }
+  #presence { columns: 2; }
+  #motion   { columns: 1; }
+
+  table { font-size: 11px; }
+  th    { font-size: 9px; letter-spacing: 1px; }
+  td    { font-size: 11px; padding: 5px 8px; }
 }
