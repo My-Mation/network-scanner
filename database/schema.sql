@@ -1,0 +1,9 @@
+CREATE TABLE wifi_scans (
+
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+bssid TEXT,
+ssid TEXT,
+rssi INTEGER,
+timestamp INTEGER
+
+);

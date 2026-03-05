@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Wireless Observatory</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="/static/css/style.css">
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header class="header">
+
+<h1>Wireless Observation Node</h1>
+
+<div id="node-meta">
+
+<span id="node-id">Node ID: WN-01</span>
+<span id="node-status">Status: ACTIVE</span>
+<span id="node-time">Time: --</span>
+
+</div>
+
+</header>
+
+
+<!-- SYSTEM STATUS -->
+<div class="top-status">
+
+<div class="panel system-panel">
+<h3>System Status</h3>
+<pre id="stats"></pre>
+</div>
+
+<div class="panel rf-console">
+<h3>RF Telemetry</h3>
+<pre id="rf-console"></pre>
+</div>
+
+</div>
+<!-- MAIN DASHBOARD GRID -->
+
+<section class="dashboard-grid">
+
+
+<!-- RADAR PANEL -->
+
+<div class="panel radar-panel">
+
+<h3>RF Radar</h3>
+
+<div class="radar-container">
+
+<canvas id="radar" width="420" height="420"></canvas>
+
+</div>
+
+<div class="radar-stats">
+
+<div id="radar-targets"></div>
+<div id="radar-refresh"></div>
+
+</div>
+
+</div>
+
+<div class="panel metrics-panel">
+<h3>RF Metrics</h3>
+<pre id="rf-metrics"></pre>
+</div>
+
+<!-- WIFI NETWORKS -->
+
+<div class="panel wifi-panel">
+
+<h3>Wi-Fi Networks</h3>
+
+<div class="table-scroll">
+<div id="wifi"></div>
+</div>
+
+</div>
+
+
+<!-- CHANNEL USAGE -->
+
+<div class="panel spectrum-panel">
+
+<h3>Channel Spectrum</h3>
+
+<pre id="channels"></pre>
+
+<div id="spectrum-bars"></div>
+
+</div>
+
+
+<!-- RF DENSITY -->
+
+<div class="panel">
+<h3>DEVICE PRESENCE</h3>
+<pre id="presence"></pre>
+</div>
+
+<div class="panel">
+<h3>MOTION ANALYSIS</h3>
+<pre id="motion"></pre>
+</div>
+
+<div class="panel">
+<h3>RF DENSITY TIMELINE</h3>
+<canvas id="densityChart" width="400" height="150"></canvas>
+</div>
+
+<div class="panel">
+<h3>CHANNEL SPECTRUM GRAPH</h3>
+<canvas id="channelGraph" width="400" height="150"></canvas>
+</div>
+
+<!-- CELL TOWERS -->
+
+<div class="panel cell-panel">
+
+<h3>Cell Towers</h3>
+
+<pre id="cells"></pre>
+
+<div id="cell-summary"></div>
+
+</div>
+
+
+<!-- DEVICE SENSORS -->
+
+<div class="panel sensor-panel">
+
+<h3>Device Sensors</h3>
+
+<pre id="sensors"></pre>
+
+<div id="sensor-summary"></div>
+
+</div>
+
+
+<!-- LAN DEVICES -->
+
+<div class="panel lan-panel">
+
+<h3>LAN Devices</h3>
+
+<pre id="lan"></pre>
+
+<div id="lan-map"></div>
+
+</div>
+
+
+<!-- RF ALERTS -->
+
+<div class="panel alert-panel">
+
+<h3>RF Alerts</h3>
+
+<pre id="alerts"></pre>
+
+<div id="alert-count"></div>
+
+</div>
+
+
+<!-- RF ACTIVITY -->
+
+<div class="panel activity-panel">
+
+<h3>RF Activity</h3>
+
+<pre id="rf-activity"></pre>
+
+</div>
+
+
+<!-- SIGNAL HISTOGRAM -->
+
+<div class="panel histogram-panel">
+
+<h3>Signal Histogram</h3>
+
+<pre id="signal-histogram"></pre>
+
+</div>
+
+
+<!-- DEVICE VENDORS -->
+
+<div class="panel vendor-panel">
+
+<h3>Device Vendors</h3>
+
+<pre id="vendors"></pre>
+
+</div>
+
+
+<!-- SCAN PERFORMANCE -->
+
+<div class="panel performance-panel">
+
+<h3>Scan Performance</h3>
+
+<pre id="scan-times"></pre>
+
+</div>
+
+
+<!-- EVENT STREAM -->
+
+<div class="panel event-panel">
+
+<h3>Event Stream</h3>
+
+<pre id="events"></pre>
+
+</div>
+
+
+<!-- NETWORK SECURITY -->
+
+<div class="panel security-panel">
+
+<h3>Network Security</h3>
+
+<pre id="security"></pre>
+
+</div>
+
+
+<!-- ENVIRONMENT ANALYSIS -->
+
+<div class="panel environment-panel">
+
+<h3>RF Environment</h3>
+
+<pre id="environment"></pre>
+
+</div>
+
+
+</section>
+
+
+<!-- FOOTER -->
+
+<footer class="footer">
+
+<div id="scan-cycle">Scan cycle: --</div>
+
+<div id="scan-latency">Latency: -- ms</div>
+
+<div id="scan-status">Scanner: ACTIVE</div>
+
+</footer>
+
+
+<!-- JAVASCRIPT -->
+
+<script src="/static/js/app.js"></script>
+
+</body>
+
+</html>
